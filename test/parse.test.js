@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { parse } from '../src/index.js';
+import { parse, useParser, removeParser } from '../src/index.js';
 
 test('named colors', t => {
 	assert.deepEqual(
@@ -350,6 +350,24 @@ test('surrounding whitespace', t => {
 			assert.deepEqual(parse(padded), expected, JSON.stringify(padded));
 		});
 	});
+});
+
+test('custom parsers receive the trimmed string', t => {
+	const parseTestColor = str =>
+		str === '--test-color'
+			? { mode: 'rgb', r: 0.2, g: 0.4, b: 0.6 }
+			: undefined;
+	useParser(parseTestColor);
+	try {
+		assert.deepEqual(parse(' \t--test-color\n'), {
+			mode: 'rgb',
+			r: 0.2,
+			g: 0.4,
+			b: 0.6
+		});
+	} finally {
+		removeParser(parseTestColor);
+	}
 });
 
 test('lab()', t => {
