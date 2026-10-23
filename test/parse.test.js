@@ -332,6 +332,26 @@ test('transparent', t => {
 	});
 });
 
+test('surrounding whitespace', t => {
+	[
+		'#336699',
+		'tomato',
+		'transparent',
+		'rgb(51, 102, 153)',
+		'rgba(51, 102, 153, 0.5)',
+		'hsl(210, 50%, 40%)',
+		'hsla(210, 50%, 40%, 0.5)',
+		'rgb(51 102 153)',
+		'color(srgb 0.2 0.4 0.6)'
+	].forEach(color => {
+		const expected = parse(color);
+		assert.notEqual(expected, undefined, color);
+		[` ${color}`, `${color} `, `\n\t${color}\n`].forEach(padded => {
+			assert.deepEqual(parse(padded), expected, JSON.stringify(padded));
+		});
+	});
+});
+
 test('lab()', t => {
 	assert.deepEqual(
 		parse('lab(50% -5 10 / 50%)'),
